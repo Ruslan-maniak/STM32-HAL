@@ -15,16 +15,33 @@
 //                  Структуры и типы
 //==============================================================================
 
+    // тригер
+    typedef enum
+    {
+        eGpioTriger_RISE  = EXTI_Trigger_Rising,
+        eGpioTriger_FALL  = EXTI_Trigger_Falling,        
+        eGpioTriger_ALL   = EXTI_Trigger_Rising_Falling,
+    } eGpioTriger;
+       
     // Структура пина
     typedef struct 
     {
         GPIO_TypeDef*       port;       // порт (A..H)
         uint32_t            rcc;        // источник тактирования
+        uint8_t             portSource; // портсоурс 
         uint8_t             pin;        // номер пина (0..15)
         GPIOSpeed_TypeDef   speed;      // скорость (LOW, MEDIUM, HIGH)
         GPIOMode_TypeDef    mode;       // режим работы пина
         uint32_t            remap;      // ремап
     } sGpio;
+    
+    typedef struct
+    {
+        sGpio*              gpio;
+        eGpioTriger         triger;
+        void                (*function)(void*);
+        void                (*object);  
+    } sExtiHandler;
 
 //==============================================================================
 //                      Прототипы функций
@@ -50,7 +67,13 @@
     
     // чтение значения выхода пина
     uint8_t GPIOReadOut (sGpio* gpio);
-
+    
+    void GPIOExtiConfig (eGpioTriger triger, uint8_t priority, void (*fuction)(void*), void (*object), sGpio* gpio);
+    
+    void GPIOExtiDisable (sGpio* gpio);
+    
+    void GPIOExtiEnable (sGpio* gpio);
+    
 #endif //__GPIO_H
 
 

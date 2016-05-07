@@ -12,6 +12,9 @@
 //                      Константы и макросы
 //==============================================================================
     
+    // кол-во векторов внешних прерываний
+    #define EXTI_VECTORS_COUNT  7
+
     // определение портов
     #define A           GPIOA,RCC_APB2Periph_GPIOA,GPIO_PortSourceGPIOA
     #define B           GPIOB,RCC_APB2Periph_GPIOB,GPIO_PortSourceGPIOB
@@ -48,11 +51,14 @@
 //                      Глобальные переменные
 //==============================================================================
 
-    // первый пин
-    sGpio gpioTemp1 = {A, 11, HIGH, OUT_PP};
+    // пин кнопки
+    sGpio gpioKey = {C, 12, HIGH, IN_PU};
 
+    // пин лампочки
+    sGpio gpioLed = {B, 7, HIGH, OUT_PP};
+    
     // внешние прерывания
-    sExtiHandler  extiHandlers[6];
+    sExtiHandler  extiHandlers[EXTI_VECTORS_COUNT];
     
 //==============================================================================
 //              Инициализация пина
@@ -73,6 +79,13 @@ void GPIOInit (sGpio* gpio)
         {
             RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
             GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+        }
+        
+        if((gpio->port == GPIOA && (1 << gpio->pin) == GPIO_Pin_13) ||
+           (gpio->port == GPIOA && (1 << gpio->pin) == GPIO_Pin_14))
+        {
+            RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+            GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE);
         }
         
         // конфигурирование пина
@@ -132,7 +145,7 @@ void GPIOToggle (sGpio* gpio)
 //==============================================================================
 //              Установка на пине значения
 //------------------------------------------------------------------------------
-//  value   - значение (0..1)
+//  value   - значение (0,1)
 //  gpio    - пин
 //==============================================================================
 
@@ -173,17 +186,20 @@ uint8_t GPIOReadOut (sGpio* gpio)
 //==============================================================================
 //              Конфигурация внешнего прерывания
 //------------------------------------------------------------------------------
-//  gpio    - пин
-//  return  - значение на выходе пина
+//  triger      - тип тригера
+//  priority    - приоритет прерывания (0..15)
+//  fuction     - внешний обработчик
+//  object      - объект использующий прерывание
+//  gpio        - пин
 //==============================================================================
 
 void GPIOExtiConfig (eGpioTriger triger, uint8_t priority, void (*fuction)(void*), void (*object), sGpio* gpio)
 {    
     if(gpio)
     {
-        NVIC_InitTypeDef   NVIC_InitStructure;
-        EXTI_InitTypeDef    EXTI_InitStructure;
-        
+        NVIC_InitTypeDef   NVIC_InitStructure; 
+               
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
         GPIO_EXTILineConfig(gpio->portSource, gpio->pin);
         
         uint8_t handlerNumber;
@@ -202,22 +218,16 @@ void GPIOExtiConfig (eGpioTriger triger, uint8_t priority, void (*fuction)(void*
             handlerNumber = gpio->pin;  
             NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn + gpio->pin;
         }
-                
-        extiHandlers[handlerNumber].gpio = gpio;
-        extiHandlers[handlerNumber].function = fuction;
-        extiHandlers[handlerNumber].object = object;
-        extiHandlers[handlerNumber].triger = triger;
         
         NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = priority;
         NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
         NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-        NVIC_Init(&NVIC_InitStructure);        
+        NVIC_Init(&NVIC_InitStructure);   
         
-        EXTI_InitStructure.EXTI_Line = (1 << extiHandlers[handlerNumber].gpio->pin);
-        EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;  
-        EXTI_InitStructure.EXTI_Trigger = (EXTITrigger_TypeDef)extiHandlers[handlerNumber].triger;
-        EXTI_InitStructure.EXTI_LineCmd = DISABLE;
-        EXTI_Init(&EXTI_InitStructure);   
+        extiHandlers[handlerNumber].gpio = gpio;
+        extiHandlers[handlerNumber].function = fuction;
+        extiHandlers[handlerNumber].object = object;
+        extiHandlers[handlerNumber].triger = triger;
     }	
 }
 
@@ -229,7 +239,7 @@ void GPIOExtiConfig (eGpioTriger triger, uint8_t priority, void (*fuction)(void*
 
 void GPIOExtiEnable (sGpio* gpio)
 {
-    for( uint8_t extiNumber = 0; extiNumber < 6; extiNumber++)
+    for(uint8_t extiNumber = 0; extiNumber < EXTI_VECTORS_COUNT; extiNumber++)
         if(gpio == extiHandlers[extiNumber].gpio)
         {
             EXTI_InitTypeDef    EXTI_InitStructure;
@@ -250,7 +260,7 @@ void GPIOExtiEnable (sGpio* gpio)
 
 void GPIOExtiDisable (sGpio* gpio)
 {
-    for( uint8_t extiNumber = 0; extiNumber < 6; extiNumber++)
+    for( uint8_t extiNumber = 0; extiNumber < EXTI_VECTORS_COUNT; extiNumber++)
         if(gpio == extiHandlers[extiNumber].gpio)
         {
             EXTI_InitTypeDef    EXTI_InitStructure;
@@ -271,9 +281,10 @@ void GPIOExtiDisable (sGpio* gpio)
 
 void GPIOExtiHandler (uint8_t extiNumber)
 {
+    if(EXTI_GetITStatus(1 << extiHandlers[extiNumber].gpio->pin) != RESET)
+        if(extiHandlers[extiNumber].function)
+            extiHandlers[extiNumber].function(extiHandlers[extiNumber].object); 
     EXTI_ClearITPendingBit(1 << extiHandlers[extiNumber].gpio->pin);
-    if(extiHandlers[extiNumber].function)
-        extiHandlers[extiNumber].function(extiHandlers[extiNumber].object);
 }
 
 

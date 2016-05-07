@@ -18,9 +18,9 @@
     // тригер
     typedef enum
     {
-        eGpioTriger_RISE  = EXTI_Trigger_Rising,
-        eGpioTriger_FALL  = EXTI_Trigger_Falling,        
-        eGpioTriger_ALL   = EXTI_Trigger_Rising_Falling,
+        eGpioTriger_RISE  = EXTI_Trigger_Rising,            // от земли к питанию
+        eGpioTriger_FALL  = EXTI_Trigger_Falling,           // от питания к земле
+        eGpioTriger_ALL   = EXTI_Trigger_Rising_Falling,    // оба варианта
     } eGpioTriger;
        
     // Структура пина
@@ -35,12 +35,13 @@
         uint32_t            remap;      // ремап
     } sGpio;
     
+    // структура внешнего прерывания
     typedef struct
     {
-        sGpio*              gpio;
-        eGpioTriger         triger;
-        void                (*function)(void*);
-        void                (*object);  
+        sGpio*              gpio;               // пин
+        eGpioTriger         triger;             // тригер прерывания
+        void                (*function)(void*); // указатель на внешний обработчик
+        void                (*object);          // объект использующий прерывание
     } sExtiHandler;
 
 //==============================================================================
@@ -68,10 +69,13 @@
     // чтение значения выхода пина
     uint8_t GPIOReadOut (sGpio* gpio);
     
+    // конфигурация внешнего прерывания
     void GPIOExtiConfig (eGpioTriger triger, uint8_t priority, void (*fuction)(void*), void (*object), sGpio* gpio);
     
+    // включение внешнего прерывания
     void GPIOExtiDisable (sGpio* gpio);
     
+    // выключение внешнего прерывания
     void GPIOExtiEnable (sGpio* gpio);
     
 #endif //__GPIO_H

@@ -70,13 +70,13 @@
     uint8_t GPIOReadOut (sGpio* gpio);
     
     // конфигурация внешнего прерывания
-    void GPIOExtiConfig (eGpioTriger triger, uint8_t priority, void (*fuction)(void*), void (*object), sGpio* gpio);
+    void GPIOExtiConfig (uint8_t priority, void (*fuction)(void*), void (*object), sGpio* gpio);
     
     // включение внешнего прерывания
-    void GPIOExtiDisable (sGpio* gpio);
+    void GPIOExtiEnable (eGpioTriger triger, sGpio* gpio);
     
     // выключение внешнего прерывания
-    void GPIOExtiEnable (sGpio* gpio);
+    void GPIOExtiDisable (sGpio* gpio);
     
 #endif //__GPIO_H
 

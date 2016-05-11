@@ -57,8 +57,12 @@
     // пин лампочки
     sGpio gpioLed1 = {B, 7, HIGH, OUT_PP};
     
+#ifdef USE_EXTI 
+    
     // внешние прерывания
     sExtiHandler  extiHandlers[EXTI_VECTORS_COUNT];
+    
+#endif //USE_EXTI
     
 //==============================================================================
 //              Инициализация пина
@@ -181,6 +185,8 @@ uint8_t GPIOReadOut (sGpio* gpio)
         return GPIO_ReadOutputDataBit(gpio->port, (1 << gpio->pin));
     return 0;
 }
+
+#ifdef USE_EXTI
 
 //==============================================================================
 //              Конфигурация внешнего прерывания
@@ -390,3 +396,4 @@ void EXTI15_10_IRQHandler (void)
     }
 }
 
+#endif //USE_EXTI

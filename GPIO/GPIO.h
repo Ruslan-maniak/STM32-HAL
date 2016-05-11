@@ -12,17 +12,15 @@
 #include "stm32F10x.h" 
 
 //==============================================================================
+//                      Константы и макросы
+//==============================================================================
+
+    #define USE_EXTI
+
+//==============================================================================
 //                  Структуры и типы
 //==============================================================================
 
-    // тригер
-    typedef enum
-    {
-        eGpioTriger_RISE  = EXTI_Trigger_Rising,            // от земли к питанию
-        eGpioTriger_FALL  = EXTI_Trigger_Falling,           // от питания к земле
-        eGpioTriger_ALL   = EXTI_Trigger_Rising_Falling,    // оба варианта
-    } eGpioTriger;
-       
     // Структура пина
     typedef struct 
     {
@@ -34,7 +32,17 @@
         GPIOMode_TypeDef    mode;       // режим работы пина
         uint32_t            remap;      // ремап
     } sGpio;
-    
+
+#ifdef USE_EXTI
+
+    // тригер
+    typedef enum
+    {
+        eGpioTriger_RISE  = EXTI_Trigger_Rising,            // от земли к питанию
+        eGpioTriger_FALL  = EXTI_Trigger_Falling,           // от питания к земле
+        eGpioTriger_ALL   = EXTI_Trigger_Rising_Falling,    // оба варианта
+    } eGpioTriger;
+       
     // структура внешнего прерывания
     typedef struct
     {
@@ -44,6 +52,8 @@
         void                (*object);          // объект использующий прерывание
     } sExtiHandler;
 
+#endif //USE_EXTI
+   
 //==============================================================================
 //                      Прототипы функций
 //==============================================================================
@@ -68,6 +78,8 @@
     
     // чтение значения выхода пина
     uint8_t GPIOReadOut (sGpio* gpio);
+
+#ifdef USE_EXTI    
     
     // конфигурация внешнего прерывания
     void GPIOExtiConfig (uint8_t priority, void (*fuction)(void*), void (*object), sGpio* gpio);
@@ -78,12 +90,6 @@
     // выключение внешнего прерывания
     void GPIOExtiDisable (sGpio* gpio);
     
+#endif //USE_EXTI
+    
 #endif //__GPIO_H
-
-
-
-
-
-
-
-

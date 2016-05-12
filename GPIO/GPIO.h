@@ -12,16 +12,17 @@
 #include "stm32F10x.h" 
 
 //==============================================================================
-//                      Константы и макросы
-//==============================================================================
-
-    // использование внешних прерываний (закоментировать если не используются)
-    #define USE_EXTI
-
-//==============================================================================
 //                  Структуры и типы
 //==============================================================================
 
+    // тригер
+    typedef enum
+    {
+        eGpioTriger_RISE  = EXTI_Trigger_Rising,            // от земли к питанию
+        eGpioTriger_FALL  = EXTI_Trigger_Falling,           // от питания к земле
+        eGpioTriger_ALL   = EXTI_Trigger_Rising_Falling,    // оба варианта
+    } eGpioTriger;
+       
     // Структура пина
     typedef struct 
     {
@@ -33,6 +34,7 @@
         GPIOMode_TypeDef    mode;       // режим работы пина
         uint32_t            remap;      // ремап
     } sGpio;
+<<<<<<< HEAD
 
 #ifdef USE_EXTI
 
@@ -48,16 +50,18 @@
         eGpioTriger_ALL   = EXTI_Trigger_Rising_Falling,    // оба варианта
     } eGpioTriger;
        
+=======
+    
+>>>>>>> parent of b5c1293... Добавлен флаг состояния прерывания (вкл\выкл)
     // структура внешнего прерывания
     typedef struct
-    {    
-        uint8_t         state;              // состояние внешнего прерывания (0 - выкл, 1 - вкл)
-        void            (*function)(void*); // указатель на внешний обработчик
-        void            (*object);          // объект использующий прерывание
+    {
+        sGpio*              gpio;               // пин
+        eGpioTriger         triger;             // тригер прерывания
+        void                (*function)(void*); // указатель на внешний обработчик
+        void                (*object);          // объект использующий прерывание
     } sExtiHandler;
 
-#endif //USE_EXTI
-   
 //==============================================================================
 //                      Прототипы функций
 //==============================================================================
@@ -82,18 +86,22 @@
     
     // чтение значения выхода пина
     uint8_t GPIOReadOut (sGpio* gpio);
-
-#ifdef USE_EXTI    
     
     // конфигурация внешнего прерывания
-    void GPIOExtiConfig (uint8_t priority, void (*fuction)(void*), void (*object), sGpio* gpio);
+    void GPIOExtiConfig (eGpioTriger triger, uint8_t priority, void (*fuction)(void*), void (*object), sGpio* gpio);
     
     // включение внешнего прерывания
-    void GPIOExtiEnable (eGpioTriger triger, sGpio* gpio);
-    
-    // выключение внешнего прерывания
     void GPIOExtiDisable (sGpio* gpio);
     
-#endif //USE_EXTI
+    // выключение внешнего прерывания
+    void GPIOExtiEnable (sGpio* gpio);
     
 #endif //__GPIO_H
+
+
+
+
+
+
+
+

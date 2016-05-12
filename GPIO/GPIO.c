@@ -236,7 +236,10 @@ void GPIOExtiEnable (eGpioTriger triger, sGpio* gpio)
     
     if(extiHandlers[gpio->pin].function != 0)
     {
+<<<<<<< HEAD
         extiHandlers[gpio->pin].state   = 1;
+=======
+>>>>>>> origin/master
         EXTI_InitTypeDef    EXTI_InitStructure;
         EXTI_InitStructure.EXTI_Line    = (1 << gpio->pin);
         EXTI_InitStructure.EXTI_Mode    = EXTI_Mode_Interrupt;  
@@ -254,7 +257,10 @@ void GPIOExtiEnable (eGpioTriger triger, sGpio* gpio)
 
 void GPIOExtiDisable (sGpio* gpio)
 {    
+<<<<<<< HEAD
     extiHandlers[gpio->pin].state = 0;   
+=======
+>>>>>>> origin/master
     EXTI_InitTypeDef    EXTI_InitStructure;
     EXTI_InitStructure.EXTI_Line    = 1 << gpio->pin;
     EXTI_InitStructure.EXTI_Mode    = EXTI_Mode_Interrupt; 

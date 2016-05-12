@@ -36,7 +36,11 @@
 
 #ifdef USE_EXTI
 
+<<<<<<< HEAD
     // тип тригер
+=======
+    // тригер
+>>>>>>> origin/master
     typedef enum
     {
         eGpioTriger_RISE  = EXTI_Trigger_Rising,            // от земли к питанию

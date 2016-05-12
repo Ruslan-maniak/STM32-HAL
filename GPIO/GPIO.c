@@ -31,30 +31,30 @@
     #define HIGH        GPIO_Speed_50MHz
 
     // определение стандартных функций
-    #define OUT_PP      GPIO_Mode_Out_PP
-    #define OUT_OD      GPIO_Mode_Out_OD
-    #define IN_PU       GPIO_Mode_IPU
-    #define IN_PD       GPIO_Mode_IPD
-    #define IN_FLOAT    GPIO_Mode_IN_FLOATING
-    #define IN_ADC      GPIO_Mode_AIN
+    #define OUT_PP      GPIO_Mode_Out_PP        // выход с подтяжкой
+    #define OUT_OD      GPIO_Mode_Out_OD        // выход с открытым коллектором
+    #define IN_PU       GPIO_Mode_IPU           // вход подтянутый к питанию
+    #define IN_PD       GPIO_Mode_IPD           // вход подтянутый к земле
+    #define IN_FLOAT    GPIO_Mode_IN_FLOATING   // вход Hi-Z
+    #define IN_ADC      GPIO_Mode_AIN           // вхо аналоговый
 
     // определение альтернативных функций
-    #define USART_TX    GPIO_Mode_AF_PP
-    #define USART_RX    IN_FLOAT
-    #define CAN_TX      GPIO_Mode_AF_PP
-    #define CAN_RX      IN_PU
-    #define SPI_SCK     GPIO_Mode_AF_PP
-    #define SPI_MOSI    GPIO_Mode_AF_PP
-    #define SPI_MISO    GPIO_Mode_AF_PP   
+    #define USART_TX    GPIO_Mode_AF_PP         // USART отправитель 
+    #define USART_RX    IN_FLOAT                // USART приёмник
+    #define CAN_TX      GPIO_Mode_AF_PP         // CAN отправитель
+    #define CAN_RX      IN_PU                   // CAN приёмник
+    #define SPI_SCK     GPIO_Mode_AF_PP         // SPI тактирование
+    #define SPI_MOSI    GPIO_Mode_AF_PP         // SPI мастер -> слэйв
+    #define SPI_MISO    GPIO_Mode_AF_PP         // SPI слэйв -> мастер
 
 //==============================================================================
 //                      Глобальные переменные
 //==============================================================================
 
-    // пин кнопки
+    // пин кнопки 1
     sGpio gpioKey1 = {C, 12, HIGH, IN_PU};
 
-    // пин лампочки
+    // пин лампочки 1
     sGpio gpioLed1 = {B, 7, HIGH, OUT_PP};
     
 #ifdef USE_EXTI 

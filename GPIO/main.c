@@ -26,6 +26,7 @@ void LedToggle (void* gpio)
 
 int main(void)
 {   
+    // инициализация пинов
     GPIOInit(&gpioKey1);
     GPIOInit(&gpioLed1);
    

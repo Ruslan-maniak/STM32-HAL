@@ -42,6 +42,7 @@ int main (void)
         // периодическая обработка светодиодов
         if(globalTimer - ledsPollTimer >= 5)
         {
+            ledsPollTimer = globalTimer;
             RelayPoll(&led1);
             RelayPoll(&led2);
             RelayPoll(&led3);

@@ -40,7 +40,7 @@ void SysTickInit(uint16_t frequence, uint8_t uSTimer)
 {
     if(SysTick_Config(SystemCoreClock / frequence))    
         while (1);
-    NVIC_SetPriority(SysTick_IRQn, 0x1);
+    NVIC_SetPriority(SysTick_IRQn, SYSTICK_PRIORITY);
     
     if(uSTimer)
     {

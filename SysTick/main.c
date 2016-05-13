@@ -13,6 +13,7 @@
                     led3,
                     led4;
     
+    // таймер обработки светодиодов
     uint32_t ledsPollTimer;
     
 //==============================================================================
@@ -21,14 +22,16 @@
 
 int main (void)
 {   
+    // инициализация глобального таймера
     SysTickInit(1000, 0);
     
-    // инициализация пинов
+    // инициализация светодиодов
     RelayInit(&led1);
     RelayInit(&led2);   
     RelayInit(&led3);
     RelayInit(&led4);
     
+    // установка режима работы для светодиодов
     RelaySetTimeOn(5000, &led1);
     RelaySetPeriodOn(200, 500, &led2);
     RelaySetPeriodOn(400, 2000, &led3);
@@ -36,6 +39,7 @@ int main (void)
     
     while(1) 
     {
+        // периодическая обработка светодиодов
         if(globalTimer - ledsPollTimer >= 5)
         {
             RelayPoll(&led1);
@@ -43,5 +47,9 @@ int main (void)
             RelayPoll(&led3);
             RelayPoll(&led4);
         }        
+        
+        // по истечении 30 секунд выключение светодиода 4
+        if(globalTimer >= 30000)
+            RelayOff(&led4);
     }
 }

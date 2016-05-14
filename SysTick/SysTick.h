@@ -16,7 +16,7 @@
 //==============================================================================
     
     // Инициализация глобального таймера
-    void SysTickInit (uint16_t frequence, uint8_t uSTimer);
+    uint8_t SysTickInit (uint16_t frequence, uint8_t uSTimer);
 
     // Денициализация глобального таймера
     void SysTickDeinit();
@@ -26,5 +26,8 @@
     
     // Микросекундная пауза
     void SysTickDelayuS (uint16_t delay);
+        
+    // Получение текущего системного времени
+    uint32_t SysTickGet (void);
     
 #endif // __SYSTICK_H
